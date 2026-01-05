@@ -187,6 +187,7 @@
     <ClInclude Include="ImaseLib\DebugFont.h" />
     <ClInclude Include="ImaseLib\DirectXTK_ImGui.h" />
     <ClInclude Include="ImaseLib\GridFloor.h" />
+    <ClInclude Include="ImaseLib\Matrix.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />

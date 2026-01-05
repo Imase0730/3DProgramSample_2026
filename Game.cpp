@@ -5,6 +5,8 @@
 #include "pch.h"
 #include "Game.h"
 
+#include "ImaseLib/Matrix.h"
+
 extern void ExitGame() noexcept;
 
 using namespace DirectX;
@@ -165,7 +167,7 @@ void Game::Render()
     // ビュー行列を取得する
     SimpleMath::Matrix view = m_debugCamera->GetCameraMatrix();
 
-    view = CreateViewMatrix(SimpleMath::Vector3(0, 0, 5), SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3::Up);
+    view = Imase::CreateViewMatrix(SimpleMath::Vector3(0, 0, 5), SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3::Up);
 
     // グリッドの床の描画
     m_gridFloor->Render(context, view, m_proj);
@@ -491,7 +493,7 @@ void Game::CreateWindowSizeDependentResources()
     GetDefaultSize(w, h);
 
     // 射影行列の作成
-    m_proj = CreatePerspectiveMatrix(
+    m_proj = Imase::CreatePerspectiveMatrix(
         // 画角　　　　　　　　　　アスペクト比
         XMConvertToRadians(45.0f), static_cast<float>(w) / static_cast<float>(h),
         // Near Far
