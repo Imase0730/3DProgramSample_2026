@@ -167,7 +167,7 @@ void Game::Render()
     // ビュー行列を取得する
     SimpleMath::Matrix view = m_debugCamera->GetCameraMatrix();
 
-    view = Imase::CreateViewMatrix(SimpleMath::Vector3(0, 0, 5), SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3::Up);
+    //view = Imase::CreateViewMatrix(SimpleMath::Vector3(0, 0, 5), SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3::Up);
 
     // グリッドの床の描画
     m_gridFloor->Render(context, view, m_proj);

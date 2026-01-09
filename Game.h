@@ -83,14 +83,11 @@ private:
     // グリッドの床
     std::unique_ptr<Imase::GridFloor> m_gridFloor;
 
-    // 入力レイアウト
-    Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
-
-    // 頂点シェーダー
-    Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
-
-    // ピクセルシェーダー
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
+    // 定数バッファのデータ
+    struct ConstantBufferData
+    {
+        DirectX::XMMATRIX worldViewProjection;   // ワールド行列×ビュー行列×プロジェクション行列
+    };
 
     // 定数バッファ
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_constantBuffer;
@@ -101,6 +98,23 @@ private:
     // インデックスバッファ
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer;
 
+    // ----- IA ----- //
+
+    // 入力レイアウト
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
+
+    // ----- VS ----- //
+
+    // 頂点シェーダー
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
+
+    // ----- PS ----- //
+
+    // ピクセルシェーダー
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
+
+    // ----- OM ----- //
+
     // ラスタライザーステート
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
@@ -109,11 +123,5 @@ private:
 
     // ブレンドステート
     Microsoft::WRL::ComPtr<ID3D11BlendState> m_blendState;
-
-    // 定数バッファのデータ
-    struct ConstantBufferData
-    {
-        DirectX::XMMATRIX worldViewProjection;   // ワールド行列×ビュー行列×プロジェクション行列
-    };
 
 };
