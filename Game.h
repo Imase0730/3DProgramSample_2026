@@ -92,6 +92,13 @@ private:
     // 定数バッファ
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_constantBuffer;
 
+    // 頂点バッファのデータ
+    struct VertexBufferData
+    {
+        DirectX::XMFLOAT3 position;
+        DirectX::XMFLOAT4 color;
+    };
+
     // 頂点バッファ
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;
 
