@@ -228,7 +228,7 @@ void Game::Render()
     context->OMSetBlendState(m_blendState.Get(), nullptr, 0xffffffff);
 
     // 描画
-    context->DrawIndexed(3, 0, 0);
+    context->DrawIndexed(6, 0, 0);
 
     // デバッグフォントの描画
     m_debugFont->Render(m_states.get());
@@ -361,8 +361,8 @@ void Game::CreateDeviceDependentResources()
         // 入力レイアウトの作成
         D3D11_INPUT_ELEMENT_DESC layout[] =
         {
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "COLOR",       0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         };
 
         DX::ThrowIfFailed(
@@ -399,9 +399,10 @@ void Game::CreateDeviceDependentResources()
         // 頂点データ
         VertexBufferData vertices[] =
         {
-            { {  0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },   // 0
-            { { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },   // 1
-            { {  1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },   // 2
+            { {  -0.5f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },   // 0
+            { {   0.5f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },   // 1
+            { {   0.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },   // 2
+            { {  -0.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } },   // 3
         };
 
         // 頂点バッファの作成
@@ -421,7 +422,7 @@ void Game::CreateDeviceDependentResources()
     // ----- インデックスバッファ ----- //
     {
         // インデックスデータ
-        UINT16 indices[] = { 0, 1, 2 };
+        UINT16 indices[] = { 0, 1, 2, 0, 2, 3 };
 
         // インデックス頂点バッファの作成
         D3D11_BUFFER_DESC desc = {};
@@ -442,8 +443,8 @@ void Game::CreateDeviceDependentResources()
         // ラスタライザーステートの作成
         D3D11_RASTERIZER_DESC desc = {};
         desc.FillMode = D3D11_FILL_SOLID;
-        desc.CullMode = D3D11_CULL_BACK;
-        desc.FrontCounterClockwise = TRUE;
+        desc.CullMode = D3D11_CULL_BACK;    // 裏面をカリング
+        desc.FrontCounterClockwise = FALSE; // 時計回りが表
         desc.DepthBias = 0;
         desc.DepthBiasClamp = 0.0f;
         desc.SlopeScaledDepthBias = 0.0f;

@@ -1,9 +1,6 @@
-struct PSInput
-{
-    float4 Color : COLOR;
-};
+#include "Header.hlsli"
 
-float4 main(PSInput pin) : SV_TARGET
+float4 main(VSOutput pin) : SV_TARGET
 {
     return pin.Color;
 }
