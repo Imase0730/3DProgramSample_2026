@@ -178,8 +178,10 @@ void Game::Render()
     {
         ConstantBufferData data = {};
 
+        SimpleMath::Matrix world = SimpleMath::Matrix::CreateScale(2.0f);
+
         // ワールド行列×ビュー行列×プロジェクション行列を設定する
-        SimpleMath::Matrix m = view * m_proj;
+        SimpleMath::Matrix m = world * view * m_proj;
 
         // シェーダーへ列優先行列を渡すため転置する
         data.worldViewProjection = XMMatrixTranspose(m);
@@ -209,14 +211,22 @@ void Game::Render()
     context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // 定数バッファの設定
-    ID3D11Buffer* cBuffer[] = { m_constantBuffer.Get() };
-    context->VSSetConstantBuffers(0, 1, cBuffer);
+    ID3D11Buffer* cBuffers[] = { m_constantBuffer.Get() };
+    context->VSSetConstantBuffers(0, 1, cBuffers);
 
     // 頂点シェーダーの設定
     context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
 
     // ピクセルシェーダーの設定
     context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+
+    // サンプラーステートの設定
+    ID3D11SamplerState* samplers[] = { m_samplerState.Get() };
+    context->PSSetSamplers(0, 1, samplers);
+
+    // シェーダーリソースの設定
+    ID3D11ShaderResourceView* shaderResources[] = { m_treeTexture.Get() };
+    context->PSSetShaderResources(0, 1, shaderResources);
 
     // ラスタライザーステートの設定
     context->RSSetState(m_rasterizerState.Get());
@@ -363,6 +373,7 @@ void Game::CreateDeviceDependentResources()
         {
             { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
             { "COLOR",       0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         };
 
         DX::ThrowIfFailed(
@@ -399,10 +410,10 @@ void Game::CreateDeviceDependentResources()
         // 頂点データ
         VertexBufferData vertices[] =
         {
-            { {  -0.5f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },   // 0
-            { {   0.5f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },   // 1
-            { {   0.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },   // 2
-            { {  -0.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } },   // 3
+            { {  -0.5f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f } },   // 0
+            { {   0.5f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f },{ 1.0f, 0.0f } },   // 1
+            { {   0.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } },   // 2
+            { {  -0.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },   // 3
         };
 
         // 頂点バッファの作成
@@ -476,10 +487,41 @@ void Game::CreateDeviceDependentResources()
         D3D11_BLEND_DESC desc = {};
         desc.AlphaToCoverageEnable = FALSE;
         desc.IndependentBlendEnable = FALSE;
-        desc.RenderTarget[0].BlendEnable = FALSE;
+
+        // 乗算済みアルファの設定
+        desc.RenderTarget[0].BlendEnable = TRUE;
         desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+        desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+        desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+        desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+        desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+        desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+        desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+
         DX::ThrowIfFailed(
             device->CreateBlendState(&desc, m_blendState.ReleaseAndGetAddressOf())
+        );
+    }
+
+    // ----- サンプラーステート ----- //
+    {
+        // サンプラーテートの作成
+        D3D11_SAMPLER_DESC desc = {};
+        desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+        desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+        desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+        desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        desc.MaxLOD = FLT_MAX;
+        DX::ThrowIfFailed(
+            device->CreateSamplerState(&desc, m_samplerState.ReleaseAndGetAddressOf())
+        );
+    }
+
+    // ----- テクスチャの読み込み ----- //
+    {
+        DX::ThrowIfFailed(
+            CreateDDSTextureFromFile(device, L"Resources/Textures/tree.dds", nullptr, m_treeTexture.ReleaseAndGetAddressOf())
         );
     }
 

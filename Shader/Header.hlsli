@@ -7,10 +7,12 @@ struct VSInput
 {
     float4 Position : SV_Position;
     float4 Color : COLOR0;
+    float2 TexCoord : TEXCOORD0;
 };
 
 struct VSOutput
 {
     float4 Color : COLOR0;
+    float2 TexCoord : TEXCOORD0;
     float4 Position : SV_Position;
 };

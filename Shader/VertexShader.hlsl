@@ -6,6 +6,7 @@ VSOutput main(VSInput vin)
     
     vout.Position = mul(vin.Position, WorldViewProj);
     vout.Color = vin.Color;
+    vout.TexCoord = vin.TexCoord;
     
     return vout;
 }

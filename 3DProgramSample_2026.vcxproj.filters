@@ -20,6 +20,9 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{01356c11-71fa-4d86-8fea-c8af3b781a30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Textures">
+      <UniqueIdentifier>{3e0fe9f1-ff9d-440d-a8f7-10e036ed106d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -146,5 +149,10 @@
     <FxCompile Include="Shader\VertexShader.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ImageContentTask Include="Textures\tree.png">
+      <Filter>Textures</Filter>
+    </ImageContentTask>
   </ItemGroup>
 </Project>

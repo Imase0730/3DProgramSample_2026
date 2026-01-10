@@ -97,6 +97,7 @@ private:
     {
         DirectX::XMFLOAT3 position;
         DirectX::XMFLOAT4 color;
+        DirectX::XMFLOAT2 textureCoordinate;
     };
 
     // 頂点バッファ
@@ -130,5 +131,11 @@ private:
 
     // ブレンドステート
     Microsoft::WRL::ComPtr<ID3D11BlendState> m_blendState;
+
+    // サンプラーステート
+    Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
+
+    // 木のテクスチャハンドル
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_treeTexture;
 
 };
