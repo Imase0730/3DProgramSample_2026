@@ -86,7 +86,8 @@ private:
     // 定数バッファのデータ
     struct ConstantBufferData
     {
-        DirectX::XMMATRIX worldViewProjection;   // ワールド行列×ビュー行列×プロジェクション行列
+        DirectX::XMMATRIX worldViewProjection;  // ワールド行列×ビュー行列×プロジェクション行列
+        DirectX::XMFLOAT3 lightDirection;       // ライトの方向ベクトル
     };
 
     // 定数バッファ
@@ -98,6 +99,7 @@ private:
         DirectX::XMFLOAT3 position;
         DirectX::XMFLOAT4 color;
         DirectX::XMFLOAT2 textureCoordinate;
+        DirectX::XMFLOAT3 normal;
     };
 
     // 頂点バッファ

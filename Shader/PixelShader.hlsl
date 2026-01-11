@@ -5,5 +5,5 @@ sampler Sampler : register(s0);
 
 float4 main(VSOutput pin) : SV_TARGET
 {
-    return Texture.Sample(Sampler, pin.TexCoord);
+    return Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
 }

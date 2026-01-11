@@ -174,6 +174,9 @@ void Game::Render()
 
     // ----- ポリゴンの描画 ----- //
 
+    SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(m_timer.GetTotalSeconds());
+    SimpleMath::Vector3 lightDir = SimpleMath::Vector3::Transform(SimpleMath::Vector3::Forward, rotY);
+
     // 定数バッファの更新
     {
         ConstantBufferData data = {};
@@ -185,6 +188,9 @@ void Game::Render()
 
         // シェーダーへ列優先行列を渡すため転置する
         data.worldViewProjection = XMMatrixTranspose(m);
+
+        // ライトの方向ベクトル
+        data.lightDirection = lightDir;
 
         D3D11_MAPPED_SUBRESOURCE mapped;
         context->Map(m_constantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
@@ -374,6 +380,7 @@ void Game::CreateDeviceDependentResources()
             { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
             { "COLOR",       0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
             { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "NORMAL",      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         };
 
         DX::ThrowIfFailed(
@@ -410,10 +417,10 @@ void Game::CreateDeviceDependentResources()
         // 頂点データ
         VertexBufferData vertices[] =
         {
-            { {  -0.5f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f } },   // 0
-            { {   0.5f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f },{ 1.0f, 0.0f } },   // 1
-            { {   0.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } },   // 2
-            { {  -0.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },   // 3
+            { {  -0.5f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f },{ 0.0f, 0.0f, 1.0f } },   // 0
+            { {   0.5f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f },{ 1.0f, 0.0f },{ 0.0f, 0.0f, 1.0f } },   // 1
+            { {   0.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f },{ 1.0f, 1.0f },{ 0.0f, 0.0f, 1.0f } },   // 2
+            { {  -0.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f },{ 0.0f, 1.0f },{ 0.0f, 0.0f, 1.0f } },   // 3
         };
 
         // 頂点バッファの作成
